@@ -1,0 +1,89 @@
+---
+title: "Week 8"
+author: "Jaymeen Gandhi"
+date: "March 24, 2020"
+output: html_document
+---
+
+
+```{r}
+require(tidyverse)
+```
+
+
+```{r}
+mtcars
+```
+
+```{r}
+f= mpg~wt+cyl
+a.model = lm(f, data = mtcars)
+summary(a.model)
+```
+```{r}
+require(ggplot2)
+```
+
+```{r}
+ggplot(data = mtcars, aes(x=wt, y=mpg, color=as.factor(cyl)))+geom_point() + geom_smooth(method = lm,se = FALSE)
+```
+
+```{r}
+f2 = mpg~wt+cyl + wt:cyl
+i.model = lm(f2,data = mtcars)
+summary(i.model)
+```
+
+```{r}
+require(vtreat)
+require(modelr)
+require(broom)
+```
+
+```{r}
+cv3=crossv_kfold(mtcars,3,id='.id')
+cv3
+```
+
+```{r}
+main_model = lm (f,data = mtcars)
+int_model = lm(f2, data = mtcars)
+
+set.seed(1234)
+main_t_models=map(cv3$train,~lm(main_model), data = .)
+main_t_models
+
+rmses = map2_dbl(main_t_models, cv3$test , rmse)
+rmses
+
+rmse_main = sqrt(sum(rmses^2)/3)
+rmse_main
+```
+
+```{r}
+int_t_models = map(cv3$train,~lm(int_model), data = .)
+int_t_models
+
+rmses = map2_dbl(int_t_models, cv3$test , rmse)
+rmses
+
+rmse_main = sqrt(sum(rmses^2)/3)
+rmse_main
+```
+
+
+
+
+
+```{r}
+f5 = raised ~ sqrt(goal)
+model3 = lm(f5,data = projects)
+summary(model3)
+rmse(model3,data = projects)
+```
+
+
+
+
+
+
